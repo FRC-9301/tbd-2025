@@ -12,7 +12,6 @@ import com.pathplanner.lib.commands.FollowPathCommand;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.simulation.SendableChooserSim;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -81,10 +80,16 @@ public class RobotContainer {
 
         // Field centric driving with d-pad
         joystick.pov(0).whileTrue(drivetrain.applyRequest(() ->
-            dPadStaright.withVelocityX(MaxSpeed * 0.2).withVelocityY(0.0)
+            dPadStaright.withVelocityX(MaxSpeed * 0.4).withVelocityY(0.0)
         ));
         joystick.pov(90).whileTrue(drivetrain.applyRequest(() ->
-            dPadStaright.withVelocityX(0.0).withVelocityY(MaxSpeed * 0.2)
+            dPadStaright.withVelocityX(0.0).withVelocityY(-MaxSpeed * 0.4)
+        ));
+        joystick.pov(180).whileTrue(drivetrain.applyRequest(() ->
+            dPadStaright.withVelocityX(-MaxSpeed * 0.4).withVelocityY(0.0)
+        ));
+        joystick.pov(270).whileTrue(drivetrain.applyRequest(() ->
+            dPadStaright.withVelocityX(0.0).withVelocityY(MaxSpeed * 0.4)
         ));
 
         // Run SysId routines when holding back/start and X/Y.
