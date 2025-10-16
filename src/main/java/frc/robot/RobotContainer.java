@@ -19,9 +19,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.DrivetrainSysId;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -41,6 +41,8 @@ public class RobotContainer {
     private final CommandXboxController joystick = new CommandXboxController(0);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+
+    public final DrivetrainSysId drivetrainSysId = new DrivetrainSysId(drivetrain);
 
     private final SendableChooser<Command> autoChooser;
 
@@ -80,24 +82,28 @@ public class RobotContainer {
 
         // Field centric driving with d-pad
         joystick.pov(0).whileTrue(drivetrain.applyRequest(() ->
-            dPadStaright.withVelocityX(MaxSpeed * 0.4).withVelocityY(0.0)
+            dPadStaright.withVelocityX(MaxSpeed * 0.6).withVelocityY(0.0)
         ));
         joystick.pov(90).whileTrue(drivetrain.applyRequest(() ->
-            dPadStaright.withVelocityX(0.0).withVelocityY(-MaxSpeed * 0.4)
+            dPadStaright.withVelocityX(0.0).withVelocityY(-MaxSpeed * 0.6)
         ));
         joystick.pov(180).whileTrue(drivetrain.applyRequest(() ->
-            dPadStaright.withVelocityX(-MaxSpeed * 0.4).withVelocityY(0.0)
+            dPadStaright.withVelocityX(-MaxSpeed * 0.6).withVelocityY(0.0)
         ));
         joystick.pov(270).whileTrue(drivetrain.applyRequest(() ->
-            dPadStaright.withVelocityX(0.0).withVelocityY(MaxSpeed * 0.4)
+            dPadStaright.withVelocityX(0.0).withVelocityY(MaxSpeed * 0.6)
         ));
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
-        joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        joystick.back().and(joystick.y()).whileTrue(drivetrainSysId.sysIdTranslationDynamic(Direction.kForward));
+        joystick.back().and(joystick.x()).whileTrue(drivetrainSysId.sysIdTranslationDynamic(Direction.kReverse));
+        joystick.back().and(joystick.a()).whileTrue(drivetrainSysId.sysIdRotationDynamic(Direction.kForward));
+        joystick.back().and(joystick.b()).whileTrue(drivetrainSysId.sysIdRotationDynamic(Direction.kReverse));
+        joystick.start().and(joystick.y()).whileTrue(drivetrainSysId.sysIdTranslationQuasistatic(Direction.kForward));
+        joystick.start().and(joystick.x()).whileTrue(drivetrainSysId.sysIdTranslationQuasistatic(Direction.kReverse));
+        joystick.start().and(joystick.a()).whileTrue(drivetrainSysId.sysIdRotationQuasistatic(Direction.kForward));
+        joystick.start().and(joystick.b()).whileTrue(drivetrainSysId.sysIdRotationQuasistatic(Direction.kReverse));
 
         // reset the field-centric heading on left bumper press
         joystick.leftBumper().onTrue(drivetrain.resetPigeon());
