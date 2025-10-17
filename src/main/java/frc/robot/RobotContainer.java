@@ -143,11 +143,21 @@ public class RobotContainer {
 
 
         operatorController.a()
-            .onTrue(armSubsystem.cmdMoveTo(ArmPoseConstants.GROUND_CORAL_STRAIGHT))
-            .whileTrue(intake.coralCollectGround());
+            .onTrue(armSubsystem.cmdMoveTo(ArmPoseConstants.GROUND_CORAL))
+            .whileTrue(intake.coralCollectGround())
+            .onFalse(armSubsystem.cmdHome());
         operatorController.b()
+            .onTrue(armSubsystem.cmdMoveTo(ArmPoseConstants.GROUND_ALGAE))
+            .whileTrue(intake.algaeCollect())
+            .onFalse(armSubsystem.cmdHome());
+        operatorController.x()
             .onTrue(armSubsystem.cmdMoveTo(ArmPoseConstants.STATION_CORAL))
-            .whileTrue(intake.coralCollectStation());
+            .whileTrue(intake.coralCollectStation())
+            .onFalse(armSubsystem.cmdHome());
+        operatorController.y()
+            .onTrue(armSubsystem.cmdMoveTo(ArmPoseConstants.L2_REEF_ALGAE_BACK))
+            .whileTrue(intake.algaeCollect())
+            .onFalse(armSubsystem.cmdHome());
     }
 
     public Command getAutonomousCommand() {
