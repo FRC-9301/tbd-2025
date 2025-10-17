@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -19,9 +20,16 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.constants.ArmPoseConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.DrivetrainSysId;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.arm.ArmSubsystem;
+import frc.robot.subsystems.arm.shoulder.ShoulderIO;
+import frc.robot.subsystems.arm.shoulder.ShoulderIOTalonFX;
+import frc.robot.subsystems.arm.wrist.WristIO;
+import frc.robot.subsystems.arm.wrist.WristIOTalonFX;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -38,15 +46,38 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
-    private final CommandXboxController joystick = new CommandXboxController(0);
+    private final CommandXboxController driveController= new CommandXboxController(0);
+
+    private final CommandXboxController operatorController = new CommandXboxController(1);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     public final DrivetrainSysId drivetrainSysId = new DrivetrainSysId(drivetrain);
 
+    public final Intake intake = new Intake();
+
+    public final ShoulderIO ShoulderIOTalonFX = new ShoulderIOTalonFX();
+
+    public final WristIO WristIOTalonFX = new WristIOTalonFX();
+
+    public final ArmSubsystem armSubsystem = new ArmSubsystem(ShoulderIOTalonFX, WristIOTalonFX);
+
     private final SendableChooser<Command> autoChooser;
 
     public RobotContainer() {
+
+        NamedCommands.registerCommand("Coral L1 Front", Commands.sequence(
+            armSubsystem.cmdMoveTo(ArmPoseConstants.L1_CORAL_FRONT),
+			intake.coralL1().withTimeout(.1)
+		));
+
+        NamedCommands.registerCommand("Coral L2 Back", Commands.sequence(
+			armSubsystem.cmdMoveTo(ArmPoseConstants.L2_CORAL_BACK),
+            intake.coralL2().withTimeout(.1)
+		));
+
+		
+
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Mode", autoChooser);
 
@@ -62,9 +93,9 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+                drive.withVelocityX(-driveController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+                    .withVelocityY(-driveController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                    .withRotationalRate(-driveController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
 
@@ -75,40 +106,48 @@ public class RobotContainer {
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
 
-        joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-        joystick.b().whileTrue(drivetrain.applyRequest(() ->
-            point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
+        driveController.a().whileTrue(drivetrain.applyRequest(() -> brake));
+        driveController.b().whileTrue(drivetrain.applyRequest(() ->
+            point.withModuleDirection(new Rotation2d(-driveController.getLeftY(), -driveController.getLeftX()))
         ));
 
         // Field centric driving with d-pad
-        joystick.pov(0).whileTrue(drivetrain.applyRequest(() ->
+        driveController.pov(0).whileTrue(drivetrain.applyRequest(() ->
             dPadStaright.withVelocityX(MaxSpeed * 0.6).withVelocityY(0.0)
         ));
-        joystick.pov(90).whileTrue(drivetrain.applyRequest(() ->
+        driveController.pov(90).whileTrue(drivetrain.applyRequest(() ->
             dPadStaright.withVelocityX(0.0).withVelocityY(-MaxSpeed * 0.6)
         ));
-        joystick.pov(180).whileTrue(drivetrain.applyRequest(() ->
+        driveController.pov(180).whileTrue(drivetrain.applyRequest(() ->
             dPadStaright.withVelocityX(-MaxSpeed * 0.6).withVelocityY(0.0)
         ));
-        joystick.pov(270).whileTrue(drivetrain.applyRequest(() ->
+        driveController.pov(270).whileTrue(drivetrain.applyRequest(() ->
             dPadStaright.withVelocityX(0.0).withVelocityY(MaxSpeed * 0.6)
         ));
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
-        joystick.back().and(joystick.y()).whileTrue(drivetrainSysId.sysIdTranslationDynamic(Direction.kForward));
-        joystick.back().and(joystick.x()).whileTrue(drivetrainSysId.sysIdTranslationDynamic(Direction.kReverse));
-        joystick.back().and(joystick.a()).whileTrue(drivetrainSysId.sysIdRotationDynamic(Direction.kForward));
-        joystick.back().and(joystick.b()).whileTrue(drivetrainSysId.sysIdRotationDynamic(Direction.kReverse));
-        joystick.start().and(joystick.y()).whileTrue(drivetrainSysId.sysIdTranslationQuasistatic(Direction.kForward));
-        joystick.start().and(joystick.x()).whileTrue(drivetrainSysId.sysIdTranslationQuasistatic(Direction.kReverse));
-        joystick.start().and(joystick.a()).whileTrue(drivetrainSysId.sysIdRotationQuasistatic(Direction.kForward));
-        joystick.start().and(joystick.b()).whileTrue(drivetrainSysId.sysIdRotationQuasistatic(Direction.kReverse));
+        driveController.back().and(driveController.y()).whileTrue(drivetrainSysId.sysIdTranslationDynamic(Direction.kForward));
+        driveController.back().and(driveController.x()).whileTrue(drivetrainSysId.sysIdTranslationDynamic(Direction.kReverse));
+        driveController.back().and(driveController.a()).whileTrue(drivetrainSysId.sysIdRotationDynamic(Direction.kForward));
+        driveController.back().and(driveController.b()).whileTrue(drivetrainSysId.sysIdRotationDynamic(Direction.kReverse));
+        driveController.start().and(driveController.y()).whileTrue(drivetrainSysId.sysIdTranslationQuasistatic(Direction.kForward));
+        driveController.start().and(driveController.x()).whileTrue(drivetrainSysId.sysIdTranslationQuasistatic(Direction.kReverse));
+        driveController.start().and(driveController.a()).whileTrue(drivetrainSysId.sysIdRotationQuasistatic(Direction.kForward));
+        driveController.start().and(driveController.b()).whileTrue(drivetrainSysId.sysIdRotationQuasistatic(Direction.kReverse));
 
         // reset the field-centric heading on left bumper press
-        joystick.leftBumper().onTrue(drivetrain.resetPigeon());
+        driveController.leftBumper().onTrue(drivetrain.resetPigeon());
 
         drivetrain.registerTelemetry(logger::telemeterize);
+
+
+        operatorController.a()
+            .onTrue(armSubsystem.cmdMoveTo(ArmPoseConstants.GROUND_CORAL_STRAIGHT))
+            .whileTrue(intake.coralCollectGround());
+        operatorController.b()
+            .onTrue(armSubsystem.cmdMoveTo(ArmPoseConstants.STATION_CORAL))
+            .whileTrue(intake.coralCollectStation());
     }
 
     public Command getAutonomousCommand() {
