@@ -52,12 +52,26 @@ public class Intake extends SubsystemBase {
     vertMotorL.configure(vertMotorLConfig, null, null);
     
   }
-  public Command setVoltageTop(double volts){
+  private Command setVoltageTop(double volts){
     return Commands.runOnce(() -> topMotor.setVoltage(volts), this);
   }
 
-  public Command setVoltageVert(double volts){
+  private Command setVoltageVert(double volts){
     return Commands.runOnce(() -> vertMotorL.setVoltage(volts), this);
+  }
+
+  private Command setVoltageBoth(double volts){
+    return Commands.runOnce(() -> {
+      topMotor.setVoltage(volts);
+      vertMotorL.setVoltage(volts);
+    }, this);
+
+  }
+  public Command stopMotors(){
+    return Commands.runOnce(() -> {
+      topMotor.setVoltage(0);
+      vertMotorL.setVoltage(0);
+    }, this);
   }
 
   // Algae commands
@@ -72,13 +86,11 @@ public class Intake extends SubsystemBase {
   }
 
   // Coral commands
+  public Command coralCollectGround (){
+    return setVoltageBoth(CollectingVoltages.COLLECTING_VERT_CORAL_VOLTAGE);
+  }
   public Command coralCollectStation (){
     return setVoltageVert(CollectingVoltages.COLLECTING_VERT_CORAL_VOLTAGE);
-  }
-  public Command coralCollectGround (){
-    return Commands.parallel(
-    setVoltageVert(CollectingVoltages.COLLECTING_VERT_CORAL_VOLTAGE), 
-    setVoltageTop(CollectingVoltages.COLLECTING_VERT_CORAL_VOLTAGE));
   }
   public Command coralL1 (){
     return setVoltageVert(EjectingVoltages.EJECTING_VERTICAL_CORAL_VOLTAGE_L1);
