@@ -60,37 +60,6 @@ public final class Constants {
         public static final double WRIST_BUTTON_HOME_ANGLE_DEGREES = 134.74;
     }
 
-    public static final class ClimberConstants {
-        public static final double INTAKE_MOTOR_VOLTAGE = 12.0;
-        public static final double REJECT_MOTOR_VOLTAGE = -12.0;
-
-        public static final double CLIMBER_PULLEY_DIAMETER = Units.Meter.convertFrom(0.25 * 12 / Math.PI, Units.Inch);
-        public static final double CLIMBER_GEAR_RATIO = (66.0 / 9.0) * (50.0 / 14.0);
-        public static final double CLIMBER_ACCELERATION = Units.Meter.convertFrom(40.0, Units.Inch);
-        public static final double CLIMBER_VELOCITY = Units.Meter.convertFrom(10.0, Units.Inch);
-        public static final double CLIMBER_CARRIAGE_INTAKE_POSITION = Units.Meter.convertFrom(7.5, Units.Inch);
-        public static final double CLIMBER_CARRIAGE_SETPOINT_TOLERANCE = Units.Meter.convertFrom(0.1, Units.Inch);
-        public static final double CLIMBER_CARRIAGE_CAGE_SUPPLY_CURRENT_THRESHOLD = 15.0;
-        public static final double CLIMBER_CARRIAGE_CAGE_VELOCITY_RPS_THRESHOLD = 70.0;
-        public static final double CLIMBER_DRIVEN_HOME_RESET_POSITION_METERS =
-                Units.Meter.convertFrom(-0.04, Units.Inch);
-
-        public static final double CLIMBER_BUTTON_HOME_RESET_POSITION_METERS = 0.0;
-
-        public static final double CLIMBER_ZERO_VELOCITY_THRESHOLD_METERS_PER_SECOND =
-                Units.Meter.convertFrom(0.1, Units.Inch);
-        public static final double CLIMBER_ZERO_VELOCITY_TIME_PERIOD = 0.15;
-        public static final double CLIMBER_DUTY_CYCLE_FOR_ZEROING = -0.07;
-
-        public static final double CLIMBER_POSITION_COEFFICIENT =
-                Math.PI * CLIMBER_PULLEY_DIAMETER / CLIMBER_GEAR_RATIO;
-
-        public static final double CLIMBER_ACCELERATION_CONSTRAINT =
-                CLIMBER_ACCELERATION / ClimberConstants.CLIMBER_POSITION_COEFFICIENT;
-        public static final double CLIMBER_VELOCITY_CONSTRAINT =
-                CLIMBER_VELOCITY / ClimberConstants.CLIMBER_POSITION_COEFFICIENT;
-    }
-
     public static final class IntakeConstants {
         public static final class CollectingVoltages {
             public static final double COLLECTING_VERT_CORAL_VOLTAGE = 5.0;
