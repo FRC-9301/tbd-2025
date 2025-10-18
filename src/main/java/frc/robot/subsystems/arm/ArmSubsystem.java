@@ -315,6 +315,14 @@ public class ArmSubsystem extends SubsystemBase {
     public Command cmdSetNeutralMode(NeutralModeValue neutral) {
         return Commands.runOnce(() -> setNeutralMode(neutral), this).withName("ArmSetNeutral");
     }
+
+    public Command cmdWaitUntilAtSetpoint() {
+        return Commands.waitUntil(this::reachedSetpoint).withName("ArmWaitUntilAtSetpoint");
+    }
+
+    public Command cmdShoulderVoltage(double volts) {
+        return Commands.runOnce(() -> shoulderIO.setVoltage(volts), this).withName("ArmShoulderVoltage");
+    }
 }
 
 
