@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+//import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -49,6 +50,8 @@ public class RobotContainer {
     private final CommandXboxController driveController= new CommandXboxController(0);
 
     private final CommandXboxController operatorController = new CommandXboxController(1);
+
+    //private final CommandPS5Controller operatorController = new CommandPS5Controller(1);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
@@ -141,23 +144,44 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
+        driveController.rightBumper().onTrue(armSubsystem.cmdTareDriven());
 
         operatorController.a()
-            .onTrue(armSubsystem.cmdMoveTo(ArmPoseConstants.GROUND_CORAL))
-            .whileTrue(intake.coralCollectGround())
-            .onFalse(armSubsystem.cmdHome());
-        operatorController.b()
-            .onTrue(armSubsystem.cmdMoveTo(ArmPoseConstants.GROUND_ALGAE))
-            .whileTrue(intake.algaeCollect())
-            .onFalse(armSubsystem.cmdHome());
-        operatorController.x()
-            .onTrue(armSubsystem.cmdMoveTo(ArmPoseConstants.STATION_CORAL))
-            .whileTrue(intake.coralCollectStation())
-            .onFalse(armSubsystem.cmdHome());
-        operatorController.y()
-            .onTrue(armSubsystem.cmdMoveTo(ArmPoseConstants.L2_REEF_ALGAE_BACK))
-            .whileTrue(intake.algaeCollect())
-            .onFalse(armSubsystem.cmdHome());
+             .onTrue(armSubsystem.cmdMoveTo(ArmPoseConstants.UPRIGHT))
+             .onFalse(armSubsystem.cmdWaitUntilAtSetpoint().andThen(armSubsystem.cmdHome().alongWith(intake.stopMotors())));
+
+        // operatorController.a()
+        //      .onTrue(armSubsystem.cmdMoveTo(ArmPoseConstants.GROUND_CORAL).alongWith(intake.coralCollectGround()))
+        //      .onFalse(armSubsystem.cmdWaitUntilAtSetpoint.andThen(cmdHome().alongWith(intake.stopMotors())));
+        // operatorController.b()
+        //     .onTrue(armSubsystem.cmdMoveTo(ArmPoseConstants.L1_CORAL_FRONT))
+        //     .whileTrue(intake.coralL1())
+        //     .onFalse(armSubsystem.cmdHome());
+        // operatorController.x()
+        //     .onTrue(armSubsystem.cmdMoveTo(ArmPoseConstants.L2_CORAL_BACK));
+        //     //.whileTrue(intake.coralL2())
+        //     //.onFalse(armSubsystem.cmdHome());
+        // operatorController.y()
+        //     .onTrue(armSubsystem.cmdMoveTo(ArmPoseConstants.L2_REEF_ALGAE_BACK))
+        //     .whileTrue(intake.algaeCollect())
+        //     .onFalse(armSubsystem.cmdHome());
+
+        
+        // operatorController.cross()
+        //     .onTrue(armSubsystem.cmdMoveTo(ArmPoseConstants.GROUND_CORAL).alongWith(intake.coralCollectGround()))
+        //     .onFalse(armSubsystem.cmdHome().alongWith(intake.stopMotors()));
+        // operatorController.circle()
+        //     .onTrue(armSubsystem.cmdMoveTo(ArmPoseConstants.GROUND_ALGAE))
+        //     .whileTrue(intake.algaeCollect())
+        //     .onFalse(armSubsystem.cmdHome());
+        // operatorController.triangle()
+        //     .onTrue(armSubsystem.cmdMoveTo(ArmPoseConstants.STATION_CORAL))
+        //     .whileTrue(intake.coralCollectStation())
+        //     .onFalse(armSubsystem.cmdHome());
+        // operatorController.square()
+        //     .onTrue(armSubsystem.cmdMoveTo(ArmPoseConstants.L2_REEF_ALGAE_BACK))
+        //     .whileTrue(intake.algaeCollect())
+        //     .onFalse(armSubsystem.cmdHome());
     }
 
     public Command getAutonomousCommand() {
