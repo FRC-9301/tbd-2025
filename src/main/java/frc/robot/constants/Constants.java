@@ -1,5 +1,4 @@
 package frc.robot.constants;
-
 import edu.wpi.first.units.Units;
 
 
@@ -32,7 +31,7 @@ public final class Constants {
         public static final double SHOULDER_SETPOINT_TOLERANCE_DEGREES = 1.0;
         public static final double WRIST_SETPOINT_TOLERANCE_DEGREES = 2.0;
 
-        public static final double SHOULDER_GEAR_RATIO = (7.75) * (58 / 18) * (32 / 14);
+        public static final double SHOULDER_GEAR_RATIO = (31.0 / 4.0) * (58.0 / 18.0) * (32.0 / 14.0);
         public static final double SHOULDER_POSITION_COEFFICIENT = 2 * Math.PI / SHOULDER_GEAR_RATIO;
 
         public static final double SHOULDER_ACCELERATION = Units.Radians.convertFrom(600, Units.Degree);
@@ -49,14 +48,14 @@ public final class Constants {
                 SHOULDER_ACCELERATION / SHOULDER_POSITION_COEFFICIENT;
         public static final double SHOULDER_VELOCITY_CONSTRAINT = SHOULDER_VELOCITY / SHOULDER_POSITION_COEFFICIENT;
 
-        public static final double WRIST_GEAR_RATIO = (7.75) * (22 / 14);
+        public static final double WRIST_GEAR_RATIO = (31.0 / 4.0) * (22.0 / 14.0);
         public static final double WRIST_POSITION_COEFFICIENT = 2 * Math.PI / WRIST_GEAR_RATIO;
 
         public static final double SHOULDER_ZEROING_DUTY_CYCLE = -0.05;
         public static final double WRIST_ZEROING_DUTY_CYCLE = 0.07;
 
-        public static final double SHOULDER_DRIVEN_HOME_ANGLE_DEGREES = -1.647;
-        public static final double WRIST_DRIVEN_HOME_ANGLE_DEGREES = 136.0;
+        public static final double SHOULDER_DRIVEN_HOME_ANGLE_DEGREES = 0;
+        public static final double WRIST_DRIVEN_HOME_ANGLE_DEGREES = 0;
         public static final double SHOULDER_BUTTON_HOME_ANGLE_DEGREES = -0.5;
         public static final double WRIST_BUTTON_HOME_ANGLE_DEGREES = 134.74;
     }
