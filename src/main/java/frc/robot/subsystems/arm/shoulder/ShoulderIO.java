@@ -29,6 +29,8 @@ public interface ShoulderIO extends SubsystemDataProcessor.IODataRefresher {
 
     default void setDutyCycle(double dutyCycle) {}
 
+    default void setVoltage(double voltage) {}
+
     default void setNeutralMode(NeutralModeValue neutralMode) {}
 
     @Override

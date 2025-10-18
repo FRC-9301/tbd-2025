@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -17,6 +18,7 @@ public class ShoulderIOTalonFX implements ShoulderIO {
     public final TalonFX shoulderL;
     public final TalonFX shoulderR;
 
+    VoltageOut voltageOut = new VoltageOut(0.0);
     DutyCycleOut dutyCycleOut = new DutyCycleOut(0.0);
     MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0.0).withSlot(0).withEnableFOC(true);
 
@@ -40,15 +42,17 @@ public class ShoulderIOTalonFX implements ShoulderIO {
         config.CurrentLimits.SupplyCurrentLimit = 40.0;
         config.CurrentLimits.StatorCurrentLimit = 90.0;
 
-        config.Slot0.kP = 5.0;
+        config.Slot0.kP = 10.0;
         config.Slot0.kI = 0.0;
         config.Slot0.kD = 0.0;
 
         config.Slot0.kS = 0.0;
 
+        config.Feedback.SensorToMechanismRatio = ArmConstants.SHOULDER_GEAR_RATIO;
+
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        config.MotionMagic.MotionMagicAcceleration = ArmConstants.SHOULDER_ACCELERATION_CONSTRAINT;
-        config.MotionMagic.MotionMagicCruiseVelocity = ArmConstants.SHOULDER_VELOCITY_CONSTRAINT;
+        config.MotionMagic.MotionMagicAcceleration = 4;
+        config.MotionMagic.MotionMagicCruiseVelocity = 4;
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
         shoulderL.getConfigurator().apply(config);
@@ -106,6 +110,11 @@ public class ShoulderIOTalonFX implements ShoulderIO {
     public void setNeutralMode(NeutralModeValue neutralMode) {
         shoulderL.setNeutralMode(neutralMode);
         shoulderR.setNeutralMode(neutralMode);
+    }
+
+    @Override
+    public void setVoltage(double volts) {
+        shoulderL.setControl(voltageOut.withOutput(volts));
     }
 
     @Override
