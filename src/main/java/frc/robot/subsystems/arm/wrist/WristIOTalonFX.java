@@ -39,15 +39,17 @@ public class WristIOTalonFX implements WristIO {
         config.CurrentLimits.SupplyCurrentLimit = 30.0;
         config.CurrentLimits.StatorCurrentLimit = 80.0;
 
-        config.Slot0.kP = 5.0;
+        config.Slot0.kP = 10.0;
         config.Slot0.kI = 0.0;
         config.Slot0.kD = 0.0;
 
         config.Slot0.kS = 0.0;
 
+        config.Feedback.SensorToMechanismRatio = ArmConstants.WRIST_GEAR_RATIO;
+
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        config.MotionMagic.MotionMagicAcceleration = ArmConstants.WRIST_ACCELERATION_CONSTRAINT;
-        config.MotionMagic.MotionMagicCruiseVelocity = ArmConstants.WRIST_VELOCITY_CONSTRAINT;
+        config.MotionMagic.MotionMagicAcceleration = 4;
+        config.MotionMagic.MotionMagicCruiseVelocity = 4;
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
         wristL.getConfigurator().apply(config);
