@@ -144,7 +144,7 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        driveController.rightBumper().onTrue(armSubsystem.cmdTareDriven());
+        operatorController.rightBumper().onTrue(armSubsystem.cmdTareDriven());
 
         operatorController.a()
              .onTrue(armSubsystem.cmdMoveTo(ArmPoseConstants.UPRIGHT))
