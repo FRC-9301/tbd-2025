@@ -32,7 +32,7 @@ public final class Constants {
         public static final double WRIST_SETPOINT_TOLERANCE_DEGREES = 2.0;
 
         public static final double SHOULDER_GEAR_RATIO = (31.0 / 4.0) * (58.0 / 18.0) * (32.0 / 14.0);
-        public static final double SHOULDER_POSITION_COEFFICIENT = 2 * Math.PI / SHOULDER_GEAR_RATIO;
+        public static final double SHOULDER_POSITION_COEFFICIENT = 2 * Math.PI;
 
         public static final double SHOULDER_ACCELERATION = Units.Radians.convertFrom(600, Units.Degree);
         public static final double SHOULDER_VELOCITY = Units.Radian.convertFrom(1000, Units.Degree);
@@ -49,7 +49,7 @@ public final class Constants {
         public static final double SHOULDER_VELOCITY_CONSTRAINT = SHOULDER_VELOCITY / SHOULDER_POSITION_COEFFICIENT;
 
         public static final double WRIST_GEAR_RATIO = (31.0 / 4.0) * (22.0 / 14.0);
-        public static final double WRIST_POSITION_COEFFICIENT = 2 * Math.PI / WRIST_GEAR_RATIO;
+        public static final double WRIST_POSITION_COEFFICIENT = 2 * Math.PI;
 
         public static final double SHOULDER_ZEROING_DUTY_CYCLE = -0.05;
         public static final double WRIST_ZEROING_DUTY_CYCLE = 0.07;
